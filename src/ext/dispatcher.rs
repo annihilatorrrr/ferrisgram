@@ -64,7 +64,7 @@ impl<'a> Dispatcher<'a> {
     pub async fn process_update(&mut self, update: &Update) -> tokio::task::JoinHandle<()> {
         let handler_groups = self.handler_groups.clone();
         let handlers = self.handlers.clone();
-        let error_handler = self.error_handler.clone(); 
+        let error_handler = self.error_handler;
         let bot = self.bot.clone();
         let update = update.clone();
         tokio::spawn(async move {
