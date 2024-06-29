@@ -34,6 +34,7 @@ impl<'a> Updater<'a> {
                     .collect(),
             );
         }
+        let mut pending_tasks = Vec::new();
         while self.running {
             let mut updates = self.bot.get_updates().offset(offset + 1).timeout(10);
             if allowed_updates.is_some() {
@@ -41,8 +42,12 @@ impl<'a> Updater<'a> {
             }
             for update in updates.send().await?.iter() {
                 offset = update.update_id;
-                self.dispatcher.process_update(update).await;
+                let task = self.dispatcher.process_update(update).await;
+                pending_tasks.push(task);
             }
+        }
+        for task in pending_tasks {
+            let _ = task.await;
         }
         Ok(())
     }

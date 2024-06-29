@@ -6,15 +6,16 @@ use GroupIteration::{ContinueGroups, EndGroups, ResumeGroups};
 
 type ErrorHandlerFunc = fn(&Bot, &Context, Error) -> GroupIteration;
 
+#[derive(Clone)]
 pub struct Dispatcher<'a> {
     pub bot: &'a Bot,
-    handler_groups: Vec<i32>,
-    handlers: Vec<HandlersGroup>,
-    error_handler: ErrorHandlerFunc,
+    pub handler_groups: Vec<i32>,
+    pub handlers: Vec<HandlersGroup>,
+    pub error_handler: ErrorHandlerFunc,
 }
 
 #[derive(Clone)]
-struct HandlersGroup {
+pub struct HandlersGroup {
     pub handler_group: i32,
     pub handlers: Vec<Box<dyn Handler>>,
 }
@@ -60,30 +61,37 @@ impl<'a> Dispatcher<'a> {
     pub fn add_error_handler(&mut self, error_hander: ErrorHandlerFunc) {
         self.error_handler = error_hander
     }
-    pub async fn process_update(&mut self, update: &Update) {
-        let ctx = Context::new(update);
-        for group in self.handler_groups.iter() {
-            for handler in self.handlers.iter() {
-                if &handler.handler_group == group {
-                    for handler in handler.handlers.iter() {
-                        if !handler.check_update(self.bot, update).await {
-                            continue;
-                        }
-                        let res = handler.handle_update(self.bot, &ctx).await;
-                        match res {
-                            Ok(mode) => match mode {
-                                EndGroups => return,
-                                ContinueGroups => break,
-                                ResumeGroups => continue,
-                            },
-                            Err(error) => {
-                                (self.error_handler)(self.bot, &ctx, error);
+    pub async fn process_update(&mut self, update: &Update) -> tokio::task::JoinHandle<()> {
+        let handler_groups = self.handler_groups.clone();
+        let handlers = self.handlers.clone();
+        let error_handler = self.error_handler.clone(); 
+        let bot = self.bot.clone();
+        let update = update.clone();
+        tokio::spawn(async move {
+            let ctx = Context::new(&update);
+            for group in handler_groups.iter() {
+                for handler in handlers.iter() {
+                    if &handler.handler_group == group {
+                        for handler in handler.handlers.iter() {
+                            if !handler.check_update(&bot, &update).await {
+                                continue;
+                            }
+                            let res = handler.handle_update(&bot, &ctx).await;
+                            match res {
+                                Ok(mode) => match mode {
+                                    EndGroups => return,
+                                    ContinueGroups => break,
+                                    ResumeGroups => continue,
+                                },
+                                Err(error) => {
+                                    (error_handler)(&bot, &ctx, error);
+                                }
                             }
                         }
                     }
                 }
             }
-        }
+        })
     }
     fn default_error_handler(_: &Bot, _: &Context, error: Error) -> GroupIteration {
         println!("{}", error);
