@@ -15,7 +15,7 @@ pub struct Dispatcher<'a> {
 }
 
 #[derive(Clone)]
-pub struct HandlersGroup {
+struct HandlersGroup {
     pub handler_group: i32,
     pub handlers: Vec<Box<dyn Handler>>,
 }
