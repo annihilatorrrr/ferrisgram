@@ -25,6 +25,9 @@ impl Bot {
 pub struct EditMessageLiveLocationBuilder<'a> {
     #[serde(skip)]
     bot: &'a Bot,
+    /// Unique identifier of the business connection on behalf of which the message to be edited was sent
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub business_connection_id: Option<String>,
     /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub chat_id: Option<i64>,
@@ -59,6 +62,7 @@ impl<'a> EditMessageLiveLocationBuilder<'a> {
     pub fn new(bot: &'a Bot, latitude: f64, longitude: f64) -> Self {
         Self {
             bot,
+            business_connection_id: None,
             chat_id: None,
             message_id: None,
             inline_message_id: None,
@@ -70,6 +74,11 @@ impl<'a> EditMessageLiveLocationBuilder<'a> {
             proximity_alert_radius: None,
             reply_markup: None,
         }
+    }
+
+    pub fn business_connection_id(mut self, business_connection_id: String) -> Self {
+        self.business_connection_id = Some(business_connection_id);
+        self
     }
 
     pub fn chat_id(mut self, chat_id: i64) -> Self {

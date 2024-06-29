@@ -15,6 +15,7 @@ impl InlineQueryResultCachedVideo {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: None,
             reply_markup: None,
             input_message_content: None,
         }

@@ -13,6 +13,7 @@ impl InputMediaAnimation {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: None,
             width: None,
             height: None,
             duration: None,

@@ -11,7 +11,6 @@ impl InputInvoiceMessageContent {
         title: String,
         description: String,
         payload: String,
-        provider_token: String,
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> Self {
@@ -19,7 +18,7 @@ impl InputInvoiceMessageContent {
             title,
             description,
             payload,
-            provider_token,
+            provider_token: None,
             currency,
             prices,
             max_tip_amount: None,

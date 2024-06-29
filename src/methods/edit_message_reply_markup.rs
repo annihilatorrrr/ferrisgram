@@ -10,7 +10,7 @@ use crate::types::Message;
 use crate::Bot;
 
 impl Bot {
-    /// Use this method to edit only the reply markup of messages. On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned.
+    /// Use this method to edit only the reply markup of messages. On success, if the edited message is not an inline message, the edited Message is returned, otherwise True is returned. Note that business messages that were not sent by the bot and do not contain an inline keyboard can only be edited within 48 hours from the time they were sent.
     /// <https://core.telegram.org/bots/api#editmessagereplymarkup>
     pub fn edit_message_reply_markup(&self) -> EditMessageReplyMarkupBuilder {
         EditMessageReplyMarkupBuilder::new(self)
@@ -21,6 +21,9 @@ impl Bot {
 pub struct EditMessageReplyMarkupBuilder<'a> {
     #[serde(skip)]
     bot: &'a Bot,
+    /// Unique identifier of the business connection on behalf of which the message to be edited was sent
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub business_connection_id: Option<String>,
     /// Required if inline_message_id is not specified. Unique identifier for the target chat or username of the target channel (in the format @channelusername)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub chat_id: Option<i64>,
@@ -39,11 +42,17 @@ impl<'a> EditMessageReplyMarkupBuilder<'a> {
     pub fn new(bot: &'a Bot) -> Self {
         Self {
             bot,
+            business_connection_id: None,
             chat_id: None,
             message_id: None,
             inline_message_id: None,
             reply_markup: None,
         }
+    }
+
+    pub fn business_connection_id(mut self, business_connection_id: String) -> Self {
+        self.business_connection_id = Some(business_connection_id);
+        self
     }
 
     pub fn chat_id(mut self, chat_id: i64) -> Self {

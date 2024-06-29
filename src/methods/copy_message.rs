@@ -44,6 +44,9 @@ pub struct CopyMessageBuilder<'a> {
     /// A JSON-serialized list of special entities that appear in the new caption, which can be specified instead of parse_mode
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption_entities: Option<Vec<MessageEntity>>,
+    /// Pass True, if the caption must be shown above the message media. Ignored if a new caption isn't specified.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub show_caption_above_media: Option<bool>,
     /// Sends the message silently. Users will receive a notification with no sound.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disable_notification: Option<bool>,
@@ -69,6 +72,7 @@ impl<'a> CopyMessageBuilder<'a> {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: None,
             disable_notification: None,
             protect_content: None,
             reply_parameters: None,
@@ -108,6 +112,11 @@ impl<'a> CopyMessageBuilder<'a> {
 
     pub fn caption_entities(mut self, caption_entities: Vec<MessageEntity>) -> Self {
         self.caption_entities = Some(caption_entities);
+        self
+    }
+
+    pub fn show_caption_above_media(mut self, show_caption_above_media: bool) -> Self {
+        self.show_caption_above_media = Some(show_caption_above_media);
         self
     }
 

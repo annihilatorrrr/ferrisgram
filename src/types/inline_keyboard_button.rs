@@ -4,7 +4,7 @@
 use crate::types::{CallbackGame, LoginUrl, SwitchInlineQueryChosenChat, WebAppInfo};
 use serde::{Deserialize, Serialize};
 
-/// This object represents one button of an inline keyboard. You must use exactly one of the optional fields.
+/// This object represents one button of an inline keyboard. Exactly one of the optional fields must be used to specify type of the button.
 /// <https://core.telegram.org/bots/api#inlinekeyboardbutton>
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct InlineKeyboardButton {
@@ -13,7 +13,7 @@ pub struct InlineKeyboardButton {
     /// Optional. HTTP or tg:// URL to be opened when the button is pressed. Links tg://user?id=<user_id> can be used to mention a user by their identifier without using a username, if this is allowed by their privacy settings.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// Optional. Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes. Not supported for messages sent on behalf of a Telegram Business account.
+    /// Optional. Data to be sent in a callback query to the bot when the button is pressed, 1-64 bytes
     #[serde(skip_serializing_if = "Option::is_none")]
     pub callback_data: Option<String>,
     /// Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot. Not supported for messages sent on behalf of a Telegram Business account.
@@ -34,7 +34,7 @@ pub struct InlineKeyboardButton {
     /// Optional. Description of the game that will be launched when the user presses the button. NOTE: This type of button must always be the first button in the first row.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub callback_game: Option<CallbackGame>,
-    /// Optional. Specify True, to send a Pay button. NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages.
+    /// Optional. Specify True, to send a Pay button. Substrings "⭐" and "XTR" in the buttons's text will be replaced with a Telegram Star icon. NOTE: This type of button must always be the first button in the first row and can only be used in invoice messages.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pay: Option<bool>,
 }

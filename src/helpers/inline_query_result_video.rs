@@ -22,6 +22,7 @@ impl InlineQueryResultVideo {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: None,
             video_width: None,
             video_height: None,
             video_duration: None,

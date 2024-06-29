@@ -49,6 +49,9 @@ pub struct SendVideoNoteBuilder<'a, F: InputFile> {
     /// Protects the contents of the sent message from forwarding and saving
     #[serde(skip_serializing_if = "Option::is_none")]
     pub protect_content: Option<bool>,
+    /// Unique identifier of the message effect to be added to the message; for private chats only
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub message_effect_id: Option<String>,
     /// Description of the message to reply to
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_parameters: Option<ReplyParameters>,
@@ -71,6 +74,7 @@ impl<'a, F: InputFile> SendVideoNoteBuilder<'a, F> {
             length: None,
             disable_notification: None,
             protect_content: None,
+            message_effect_id: None,
             reply_parameters: None,
             reply_markup: None,
         }
@@ -118,6 +122,11 @@ impl<'a, F: InputFile> SendVideoNoteBuilder<'a, F> {
 
     pub fn protect_content(mut self, protect_content: bool) -> Self {
         self.protect_content = Some(protect_content);
+        self
+    }
+
+    pub fn message_effect_id(mut self, message_effect_id: String) -> Self {
+        self.message_effect_id = Some(message_effect_id);
         self
     }
 

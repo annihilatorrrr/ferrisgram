@@ -16,19 +16,10 @@ impl Bot {
         title: String,
         description: String,
         payload: String,
-        provider_token: String,
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> CreateInvoiceLinkBuilder {
-        CreateInvoiceLinkBuilder::new(
-            self,
-            title,
-            description,
-            payload,
-            provider_token,
-            currency,
-            prices,
-        )
+        CreateInvoiceLinkBuilder::new(self, title, description, payload, currency, prices)
     }
 }
 
@@ -42,13 +33,14 @@ pub struct CreateInvoiceLinkBuilder<'a> {
     pub description: String,
     /// Bot-defined invoice payload, 1-128 bytes. This will not be displayed to the user, use for your internal processes.
     pub payload: String,
-    /// Payment provider token, obtained via BotFather
-    pub provider_token: String,
-    /// Three-letter ISO 4217 currency code, see more on currencies
+    /// Payment provider token, obtained via @BotFather. Pass an empty string for payments in Telegram Stars.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub provider_token: Option<String>,
+    /// Three-letter ISO 4217 currency code, see more on currencies. Pass "XTR" for payments in Telegram Stars.
     pub currency: String,
-    /// Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.)
+    /// Price breakdown, a JSON-serialized list of components (e.g. product price, tax, discount, delivery cost, delivery tax, bonus, etc.). Must contain exactly one item for payments in Telegram Stars.
     pub prices: Vec<LabeledPrice>,
-    /// The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0
+    /// The maximum accepted amount for tips in the smallest units of the currency (integer, not float/double). For example, for a maximum tip of US$ 1.45 pass max_tip_amount = 145. See the exp parameter in currencies.json, it shows the number of digits past the decimal point for each currency (2 for the majority of currencies). Defaults to 0. Not supported for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub max_tip_amount: Option<i64>,
     /// A JSON-serialized array of suggested amounts of tips in the smallest units of the currency (integer, not float/double). At most 4 suggested tip amounts can be specified. The suggested tip amounts must be positive, passed in a strictly increased order and must not exceed max_tip_amount.
@@ -69,25 +61,25 @@ pub struct CreateInvoiceLinkBuilder<'a> {
     /// Photo height
     #[serde(skip_serializing_if = "Option::is_none")]
     pub photo_height: Option<i64>,
-    /// Pass True if you require the user's full name to complete the order
+    /// Pass True if you require the user's full name to complete the order. Ignored for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub need_name: Option<bool>,
-    /// Pass True if you require the user's phone number to complete the order
+    /// Pass True if you require the user's phone number to complete the order. Ignored for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub need_phone_number: Option<bool>,
-    /// Pass True if you require the user's email address to complete the order
+    /// Pass True if you require the user's email address to complete the order. Ignored for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub need_email: Option<bool>,
-    /// Pass True if you require the user's shipping address to complete the order
+    /// Pass True if you require the user's shipping address to complete the order. Ignored for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub need_shipping_address: Option<bool>,
-    /// Pass True if the user's phone number should be sent to the provider
+    /// Pass True if the user's phone number should be sent to the provider. Ignored for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub send_phone_number_to_provider: Option<bool>,
-    /// Pass True if the user's email address should be sent to the provider
+    /// Pass True if the user's email address should be sent to the provider. Ignored for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub send_email_to_provider: Option<bool>,
-    /// Pass True if the final price depends on the shipping method
+    /// Pass True if the final price depends on the shipping method. Ignored for payments in Telegram Stars.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_flexible: Option<bool>,
 }
@@ -98,7 +90,6 @@ impl<'a> CreateInvoiceLinkBuilder<'a> {
         title: String,
         description: String,
         payload: String,
-        provider_token: String,
         currency: String,
         prices: Vec<LabeledPrice>,
     ) -> Self {
@@ -107,7 +98,7 @@ impl<'a> CreateInvoiceLinkBuilder<'a> {
             title,
             description,
             payload,
-            provider_token,
+            provider_token: None,
             currency,
             prices,
             max_tip_amount: None,
@@ -143,7 +134,7 @@ impl<'a> CreateInvoiceLinkBuilder<'a> {
     }
 
     pub fn provider_token(mut self, provider_token: String) -> Self {
-        self.provider_token = provider_token;
+        self.provider_token = Some(provider_token);
         self
     }
 

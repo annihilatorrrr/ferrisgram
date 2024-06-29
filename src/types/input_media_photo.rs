@@ -19,6 +19,9 @@ pub struct InputMediaPhoto {
     /// Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption_entities: Option<Vec<MessageEntity>>,
+    /// Optional. Pass True, if the caption must be shown above the message media
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub show_caption_above_media: Option<bool>,
     /// Optional. Pass True if the photo needs to be covered with a spoiler animation
     #[serde(skip_serializing_if = "Option::is_none")]
     pub has_spoiler: Option<bool>,

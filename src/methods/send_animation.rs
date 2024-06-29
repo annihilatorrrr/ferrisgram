@@ -55,6 +55,9 @@ pub struct SendAnimationBuilder<'a, F: InputFile> {
     /// A JSON-serialized list of special entities that appear in the caption, which can be specified instead of parse_mode
     #[serde(skip_serializing_if = "Option::is_none")]
     pub caption_entities: Option<Vec<MessageEntity>>,
+    /// Pass True, if the caption must be shown above the message media
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub show_caption_above_media: Option<bool>,
     /// Pass True if the animation needs to be covered with a spoiler animation
     #[serde(skip_serializing_if = "Option::is_none")]
     pub has_spoiler: Option<bool>,
@@ -64,6 +67,9 @@ pub struct SendAnimationBuilder<'a, F: InputFile> {
     /// Protects the contents of the sent message from forwarding and saving
     #[serde(skip_serializing_if = "Option::is_none")]
     pub protect_content: Option<bool>,
+    /// Unique identifier of the message effect to be added to the message; for private chats only
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub message_effect_id: Option<String>,
     /// Description of the message to reply to
     #[serde(skip_serializing_if = "Option::is_none")]
     pub reply_parameters: Option<ReplyParameters>,
@@ -88,9 +94,11 @@ impl<'a, F: InputFile> SendAnimationBuilder<'a, F> {
             caption: None,
             parse_mode: None,
             caption_entities: None,
+            show_caption_above_media: None,
             has_spoiler: None,
             disable_notification: None,
             protect_content: None,
+            message_effect_id: None,
             reply_parameters: None,
             reply_markup: None,
         }
@@ -151,6 +159,11 @@ impl<'a, F: InputFile> SendAnimationBuilder<'a, F> {
         self
     }
 
+    pub fn show_caption_above_media(mut self, show_caption_above_media: bool) -> Self {
+        self.show_caption_above_media = Some(show_caption_above_media);
+        self
+    }
+
     pub fn has_spoiler(mut self, has_spoiler: bool) -> Self {
         self.has_spoiler = Some(has_spoiler);
         self
@@ -163,6 +176,11 @@ impl<'a, F: InputFile> SendAnimationBuilder<'a, F> {
 
     pub fn protect_content(mut self, protect_content: bool) -> Self {
         self.protect_content = Some(protect_content);
+        self
+    }
+
+    pub fn message_effect_id(mut self, message_effect_id: String) -> Self {
+        self.message_effect_id = Some(message_effect_id);
         self
     }
 
