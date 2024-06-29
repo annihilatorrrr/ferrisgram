@@ -9,9 +9,9 @@ type ErrorHandlerFunc = fn(&Bot, &Context, Error) -> GroupIteration;
 #[derive(Clone)]
 pub struct Dispatcher<'a> {
     pub bot: &'a Bot,
-    pub handler_groups: Vec<i32>,
-    pub handlers: Vec<HandlersGroup>,
-    pub error_handler: ErrorHandlerFunc,
+    handler_groups: Vec<i32>,
+    handlers: Vec<HandlersGroup>,
+    error_handler: ErrorHandlerFunc,
 }
 
 #[derive(Clone)]
